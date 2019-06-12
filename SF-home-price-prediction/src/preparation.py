@@ -24,11 +24,13 @@ def load_real_estate_data():
 
 	df_median_all_home_price_by_zip_california = df_median_all_home_price_by_zip[df_median_all_home_price_by_zip['State']=='CA']
 	df_single_family_residence_by_zip_california = df_single_family_residence_by_zip.loc[df_single_family_residence_by_zip['State']=='CA']
-	'''
+
 	df_sale_counts_by_zip = pd.read_csv('data/raw/Sale_Counts_Zip.csv', encoding="ISO-8859-1")
+	df_sale_counts_by_zip_california = df_sale_counts_by_zip.loc[df_sale_counts_by_zip['StateName']=='California']
+	'''
+	
 	df_all_home_by_zip = pd.read_csv('data/raw/Zip_Zhvi_AllHomes.csv',  encoding="ISO-8859-1")
 
-	df_sale_counts_by_zip_california = df_sale_counts_by_zip.loc[df_sale_counts_by_zip['StateName']=='California']
 	df_all_home_by_zip_california = df_all_home_by_zip.loc[df_all_home_by_zip['State']=='CA']
 
 def load_IPO_data():
@@ -98,17 +100,18 @@ def wrangle_real_estate_data():
 	Dataframes not being used
 	df_single_family_residence_by_zip_silicon_valley = df_single_family_residence_by_zip_california[df_single_family_residence_by_zip_california['RegionName'].isin(zip_list)]
 	df_median_all_home_price_by_zip_silicon_valley = df_median_all_home_price_by_zip_california[df_median_all_home_price_by_zip_california['RegionName'].isin(zip_list)]
-	
-	'''
+
 
 	df_sale_counts_by_zip_california["RegionID"] = df_sale_counts_by_zip_california["RegionID"].astype(dtype=np.int64)
 	df_sale_counts_by_zip_california['StateName'] = df_sale_counts_by_zip_california['StateName'].astype('str')
 
 	df_sale_counts_by_zip_silicon_valley = df_sale_counts_by_zip_california[df_sale_counts_by_zip_california['RegionName'].isin(zip_list)]
-	df_all_home_by_zip_silicon_valley = df_all_home_by_zip_california[df_all_home_by_zip_california['RegionName'].isin(zip_list)]
-
-	df_all_home_by_zip_silicon_valley = df_all_home_by_zip_silicon_valley.drop(['City', 'RegionID','State','Metro','CountyName', 'SizeRank'], axis=1)
 	df_sale_counts_by_zip_silicon_valley = df_sale_counts_by_zip_silicon_valley.drop(['RegionID','StateName','SizeRank', 'seasAdj'], axis=1)
+
+	'''
+
+	df_all_home_by_zip_silicon_valley = df_all_home_by_zip_california[df_all_home_by_zip_california['RegionName'].isin(zip_list)]
+	df_all_home_by_zip_silicon_valley = df_all_home_by_zip_silicon_valley.drop(['City', 'RegionID','State','Metro','CountyName', 'SizeRank'], axis=1)
 
 def wrangle_IPO_data():
 	df_full_ipo_date_97_to_19['Date Filed'] =  pd.to_datetime(df_full_ipo_date_97_to_19['Date Filed'], errors='coerce', format='%m/%d/%Y')
@@ -194,15 +197,16 @@ def wrangle_census_data():
 def update_series_headers_real_estate():
 	'''
 	run before joining dataframes so keys match
+
+	df_sale_counts_by_zip_silicon_valley.columns = df_sale_counts_by_zip_silicon_valley.columns.str.replace('Sales Counts ', '')
+	df_sale_counts_by_zip_silicon_valley = df_sale_counts_by_zip_silicon_valley.add_prefix('Sales Counts ')
+	df_sale_counts_by_zip_silicon_valley.rename(columns = {'Sales Counts RegionName':'Zipcode'}, inplace=True)
+
 	'''
 	df_all_home_by_zip_silicon_valley.columns = df_all_home_by_zip_silicon_valley.columns.str.replace('All Homes ', '')
-	df_sale_counts_by_zip_silicon_valley.columns = df_sale_counts_by_zip_silicon_valley.columns.str.replace('Sales Counts ', '')
-
 	df_all_home_by_zip_silicon_valley = df_all_home_by_zip_silicon_valley.add_prefix('All Homes ')
-	df_sale_counts_by_zip_silicon_valley = df_sale_counts_by_zip_silicon_valley.add_prefix('Sales Counts ')
-
 	df_all_home_by_zip_silicon_valley.rename(columns = {'All Homes RegionName':'Zipcode'}, inplace=True)
-	df_sale_counts_by_zip_silicon_valley.rename(columns = {'Sales Counts RegionName':'Zipcode'}, inplace=True)
+
 
 def join_census_data():
 	'''
@@ -212,11 +216,19 @@ def join_census_data():
 
 def join_all_zipcode_data():
 	'''
+	df_zip_all_joined_data = pd.merge(df_zip_all_joined_data, df_sale_counts_by_zip_silicon_valley, on='Zipcode', how='inner')
 
 	'''
 
 	df_zip_all_joined_data = pd.merge(zip_all_census_data_silicon_valley, df_all_home_by_zip_silicon_valley, on='Zipcode', how='inner')
-	df_zip_all_joined_data = pd.merge(df_zip_all_joined_data, df_sale_counts_by_zip_silicon_valley, on='Zipcode', how='inner')
+
+	df_zip_all_joined_data = df_zip_all_joined_data.replace(['\+'], [''], regex=True)
+	df_zip_all_joined_data = df_zip_all_joined_data.replace(['\,'], [''], regex=True)
+
+	zip_df_columns_list =  list(df_zip_all_joined_data.columns.values)
+
+
+
 
 def update_series_headers_ipo_data():
 	'''
@@ -235,6 +247,7 @@ def join_ipo_data():
 
 	df_full_ipo_date_97_to_19_silicon_valley = df_full_ipo_date_97_to_19_silicon_valley.drop(['IPO Name', 'Offer date','CUSIP','PERM'], axis=1)
 
+	df_full_ipo_date_97_to_19_silicon_valley.drop_duplicates(subset='CIK', keep='first', inplace=True)
 
 
 
@@ -289,6 +302,120 @@ def filter_data_by_zipcode_list(zip_list):
 	df_all_home_by_zip_silicon_valley = df_all_home_by_zip_california[df_all_home_by_zip_california['RegionName'].isin(zip_list)]
 	df_single_family_residence_by_zip_silicon_valley = df_single_family_residence_by_zip_california[df_single_family_residence_by_zip_california['RegionName'].isin(zip_list)]
 	df_median_all_home_price_by_zip_silicon_valley = df_median_all_home_price_by_zip_california[df_median_all_home_price_by_zip_california['RegionName'].isin(zip_list)]
+
+def create_IPO_an_Zipcode_dataframe():
+	if 'Zipcode' in filtered_census_data_columns: 
+	    filtered_census_data_columns.remove('Zipcode')
+	    
+	if 'Zipcode' in filtered_census_age_race_data_columns: 
+	    filtered_census_age_race_data_columns.remove('Zipcode')
+	ipo_header_list = list(df_full_ipo.columns.values) + filtered_census_data_columns+ filtered_census_age_race_data_columns+ ['All Homes Date Filed', 
+	                                                                                      'All Homes Lockup Expiration Date',
+	                                                                                      'All Homes 1 Year After Date Filed', 
+	                                                                                      'All Homes 2 Years After Date Filed']
+    '''
+	Distance from IPO   = estimate is .2 if in the same zipcode as IPO
+	                    = estimate is 0.5 if not in same zip code as IPO and less than 5 miles from zipcode to IPO
+	                    = estimate is 1 if greater than 5 and less than 10 miles from zipcode to IPO
+	'''
+
+	df_copy = pd.DataFrame().reindex_like(df_full_ipo)
+	#ipo_header_list = ['Symbol']+ipo_header_list
+	new_df_list =[]
+
+	count = 0 
+	for index, row in df_full_ipo_date_97_to_19_silicon_valley.iterrows():
+	    ipo_zipcode = row['Zipcode']
+	    zipcode_row = df_zip_all_joined_data.loc[df_zip_all_joined_data['Zipcode']== int(ipo_zipcode)]
+	    headerList = join_IPO_and_Zip_Data(row['Date Filed'], row['Lockup Expiration Date'])
+	    data = np.concatenate((np.array(row.values), zipcode_row.filter(headerList).values), axis=None)
+	    dictionary = dict(zip(ipo_header_list, data))
+	    dictionary['Symbol'] = index
+	    dictionary['Distance to IPO'] = .2
+	    dictionary['Zipcode for Distance'] = ipo_zipcode
+	    new_df_list.append(dictionary)
+	    
+	    within_5miles = zipcodes[ipo_zipcode][0]
+	    within_10miles = zipcodes[ipo_zipcode][1]
+	    for i in range(0, len(within_5miles)):
+	        zipcode_row = df_zip_all_joined_data.loc[df_zip_all_joined_data['Zipcode']== int(within_5miles[i])]
+	        data = np.concatenate((np.array(row.values), zipcode_row.filter(headerList).values), axis=None)
+	        dictionary = dict(zip(ipo_header_list, data))
+	        dictionary['Symbol'] = index
+	        dictionary['Distance to IPO'] = .5
+	        dictionary['Zipcode for Distance'] = within_5miles[i]
+	        new_df_list.append(dictionary)
+
+	    for j in range(0, len(within_10miles)):
+	        zipcode_row = df_zip_all_joined_data.loc[df_zip_all_joined_data['Zipcode']== int(within_10miles[j])]
+	        data = np.concatenate((np.array(row.values), zipcode_row.filter(headerList).values), axis=None)
+	        dictionary = dict(zip(ipo_header_list, data))
+	        dictionary['Symbol'] = index
+	        dictionary['Distance to IPO'] = 1
+	        dictionary['Zipcode for Distance'] = within_10miles[j]
+	        new_df_list.append(dictionary)
+
+	    
+	ipo_final_df = pd.DataFrame(new_df_list)
+	ipo_final_df.dropna(subset=['Median Age'], how='all', inplace = True)
+
+	return ipo_final_df
+
+def normalize_IPO_an_Zipcode_dataframe():
+	normalization_list = ['Offer Amount', 'Number of Employees','Found', 'Median Age',
+	 'Percent of People under 18 years of age',
+	 'Percent of People 65 years and over',
+	 'Percent of Males',
+	 'Percent of Females',
+	 'Percent of People who are Hispanic',
+	 'Percent of People who are White',
+	 'Percent of People who are Black or African American',
+	 'Percent of People who are Asian',
+	 'Unemployment Rate',
+	'Mean Travel Time to Work Estimate (minutes)',
+	'Percent of Households with Income Greater than $200,000',
+	'Median Household Income Estimate (dollars)',
+	'Mean Household Income Estimate (dollars)',
+	'Per Capita Income Estimate (dollars)',
+	'Percent of Population with no Health Insurance Coverage',
+	'Percent of People whose Income in the Past 12 months has been Below Poverty Level',
+	'Percent of Households With Income Less Than $24,999'
+	                     ]
+	ipo_final_df = ipo_final_df.replace(['--'], [''], regex=True)
+	ipo_final_df= ipo_final_df.replace(r'^\s*$', np.nan, regex=True)
+	ipo_final_df = ipo_final_df.replace(['\,'], [''], regex=True)
+	ipo_final_df = ipo_final_df.replace(['\+'], [''], regex=True)
+
+	scaler = MinMaxScaler()
+	ipo_final_df[normalization_list] = scaler.fit_transform(ipo_final_df[normalization_list])
+	return ipo_final_df
+
+
+
+def join_IPO_and_Zip_Data(IPO_Date_Filed, IPO_Lockup_Expiration_Date):
+    filtered_columns = filtered_census_age_race_data_columns+ filtered_census_data_columns #remove 'zipcode'
+    ipo_month_filed = IPO_Date_Filed.month
+    ipo_year_filed = IPO_Date_Filed.year
+    AllHomes_header_filed = 'All Homes ' +str(ipo_year_filed)+'-'+str(ipo_month_filed).zfill(2)
+    #SalesCounts_header_filed = 'Sales Counts ' +str(ipo_year_filed)+'-'+str(ipo_month_filed).zfill(2)
+    
+    ipo_month = IPO_Lockup_Expiration_Date.month
+    ipo_year = IPO_Lockup_Expiration_Date.year
+    AllHomes_header_lockup = 'All Homes ' +str(ipo_year)+'-'+str(ipo_month).zfill(2)
+    #SalesCounts_header_lockup = 'Sales Counts ' +str(ipo_year)+'-'+str(ipo_month).zfill(2)
+    
+    AllHomes_header_filed_1_yr = 'All Homes ' +str(int(ipo_year_filed)+1)+'-'+str(ipo_month_filed).zfill(2)
+   # SalesCounts_header_filed_1_yr = 'Sales Counts ' +str(int(ipo_year_filed)+1)+'-'+str(ipo_month_filed).zfill(2)
+    
+    AllHomes_header_filed_2_yr = 'All Homes ' +str(int(ipo_year_filed)+2)+'-'+str(ipo_month_filed).zfill(2)
+    #SalesCounts_header_filed_2_yr = 'Sales Counts ' +str(int(ipo_year_filed)+2)+'-'+str(ipo_month_filed).zfill(2)
+    
+    filtered_columns = filtered_columns + [AllHomes_header_filed,AllHomes_header_lockup,
+                                            AllHomes_header_filed_1_yr, 
+                                            AllHomes_header_filed_2_yr]
+    return filtered_columns                                                                                     
+
+
 
 
 
