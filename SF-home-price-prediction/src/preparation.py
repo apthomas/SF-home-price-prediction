@@ -161,4 +161,12 @@ def create_text_file_from_dictionary(filename, dictionary):
   	with open(filename, 'w') as json_file:
   		json.dump(dictionary, json_file)
     
+def filter_data_by_zipcode_list(zip_list):
+	zip_census_data_silicon_valley = zip_census_data[zip_census_data['Zipcode'].isin(zip_list)]
+	df_sale_counts_by_zip_silicon_valley = df_sale_counts_by_zip_california[df_sale_counts_by_zip_california['RegionName'].isin(zip_list)]
+	df_all_home_by_zip_silicon_valley = df_all_home_by_zip_california[df_all_home_by_zip_california['RegionName'].isin(zip_list)]
+	df_single_family_residence_by_zip_silicon_valley = df_single_family_residence_by_zip_california[df_single_family_residence_by_zip_california['RegionName'].isin(zip_list)]
+	df_median_all_home_price_by_zip_silicon_valley = df_median_all_home_price_by_zip_california[df_median_all_home_price_by_zip_california['RegionName'].isin(zip_list)]
+
+
 
