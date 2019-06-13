@@ -1,9 +1,11 @@
-import os
 import pandas as pd
 import numpy as np
 import csv
 import urllib.request
 import json
+import sklearn
+from sklearn import preprocessing
+from sklearn.preprocessing import MinMaxScaler
 
 '''
 df_full_ipo_date_97_to_19_silicon_valley - This is the data that I scraped from the NASDAQ website that lists all the
@@ -309,7 +311,7 @@ def create_IPO_an_Zipcode_dataframe():
 	    
 	if 'Zipcode' in filtered_census_age_race_data_columns: 
 	    filtered_census_age_race_data_columns.remove('Zipcode')
-	ipo_header_list = list(df_full_ipo.columns.values) + filtered_census_data_columns+ filtered_census_age_race_data_columns+ ['All Homes Date Filed', 
+	ipo_header_list = list(df_full_ipo_date_97_to_19_silicon_valley.columns.values) + filtered_census_data_columns+ filtered_census_age_race_data_columns+ ['All Homes Date Filed', 
 	                                                                                      'All Homes Lockup Expiration Date',
 	                                                                                      'All Homes 1 Year After Date Filed', 
 	                                                                                      'All Homes 2 Years After Date Filed']
@@ -319,8 +321,6 @@ def create_IPO_an_Zipcode_dataframe():
 	                    = estimate is 1 if greater than 5 and less than 10 miles from zipcode to IPO
 	'''
 
-	df_copy = pd.DataFrame().reindex_like(df_full_ipo)
-	#ipo_header_list = ['Symbol']+ipo_header_list
 	new_df_list =[]
 
 	count = 0 
