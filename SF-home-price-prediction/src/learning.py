@@ -102,7 +102,7 @@ def prep_train_validation_test_data(df_train, df_test, label_attr, feature_list)
     x_pred_test = df_test.loc[:, feature_list]
 
     X_train, X_validation, Y_train, Y_validation = train_test_split(X, y, test_size=0.2, random_state=42)
-    return  X_train, X_validation, Y_train, Y_validation, x_pred_test, df_test[label_attr]
+    return  X_train, X_validation, Y_train, Y_validation, x_pred_test
 
 def plot_single_variable_distribution_and_prob_plot(df, attr):
     plt.subplots(figsize=(10, 9))
@@ -157,49 +157,58 @@ def run_k_folds(num_folds, algs_to_test, df_train_x, df_train_y):
         msg = "%s: %f (%f)" % (name, cv_results.mean(), cv_results.std())
         print(msg)
 
-def evaluate_model(df_train_x, df_train_y,df_test_x, df_test_y, seed):
+def build_models(df_train_x, df_train_y,df_validation_x, df_validation_y, seed):
     # prepare the model
 
     model = ExtraTreesRegressor(random_state=seed, n_estimators=100)
     model.fit(df_train_x, df_train_y)
     # transform the validation dataset
-    predictions = model.predict(df_test_x)
-    print(mean_squared_error(df_test_y, predictions))
-    print("Accuracy --> ", model.score(df_test_x, df_test_y) * 100)
+    predictions = model.predict(df_validation_x)
+    #print(predictions)
+    #print(df_test_y)
+    print(mean_squared_error(df_validation_y, predictions))
+    print("Accuracy --> ", model.score(df_validation_x, df_validation_y) * 100)
 
     # prepare the model
 
     model_rf = RandomForestRegressor(random_state=seed, n_estimators=100)
     model_rf.fit(df_train_x, df_train_y)
     # transform the validation dataset
-    predictions_rf = model_rf.predict(df_test_x)
-    print(mean_squared_error(df_test_y, predictions_rf))
-    print("Accuracy --> ", model.score(df_test_x, df_test_y) * 100)
+    predictions_rf = model_rf.predict(df_validation_x)
+    print(mean_squared_error(df_validation_y, predictions_rf))
+    print("Accuracy --> ", model.score(df_validation_x, df_validation_y) * 100)
 
     params = {'n_estimators': 500, 'max_depth': 4, 'min_samples_split': 2,
               'learning_rate': 0.01, 'loss': 'ls'}
     model_gb = ensemble.GradientBoostingRegressor(**params)
     model_gb.fit(df_train_x, df_train_y)
     # transform the validation dataset
-    predictions_gb = model_gb.predict(df_test_x)
-    print(mean_squared_error(df_test_y, predictions_gb))
-    print("Accuracy --> ", model.score(df_test_x, df_test_y) * 100)
+    predictions_gb = model_gb.predict(df_validation_x)
+    print(mean_squared_error(df_validation_y, predictions_gb))
+    print("Accuracy --> ", model.score(df_validation_x, df_validation_y) * 100)
+
+    return [model, model_rf, model_gb]
+
+def make_predictions_model(models, df_test_x):
+    # prepare the model
+
+    predictions = models[0].predict(df_test_x)
+    predictions_rf = models[1].predict(df_test_x)
+    predictions_gb = models[2].predict(df_test_x)
 
     return [predictions, predictions_rf, predictions_gb]
 
-def create_predictions(predictions, df_x, df_y):
-    predictions = predictions.astype(int)
-    df_x["Org House Price"] = df_y
-    df_x["Pred House Price"] = predictions[0]
-    df_x["Pred House Price RF"] = predictions_rf[1]
-    df_x["Pred House Price GB"] = predictions_gb[2]
-    df_x["Pred House Price Change"] = predictions[0] / Y_validation - 1
-    df_x["Pred House Price RF Change"] = predictions_rf[1] / Y_validation - 1
-    df_x["Pred House Price GB Change"] = predictions_gb[2] / Y_validation - 1
+def create_predictions(predictions, df_x, label_divider):
+    df_x["Pred House Price ET"] = predictions[0]
+    df_x["Pred House Price RF"] = predictions[1]
+    df_x["Pred House Price GB"] = predictions[2]
+    df_x["Pred House Price ET Change"] = predictions[0] / df_x[label_divider] - 1
+    df_x["Pred House Price RF Change"] = predictions[1] / df_x[label_divider] - 1
+    df_x["Pred House Price GB Change"] = predictions[2] /df_x[label_divider] - 1
 
     return df_x
 
-def main():
+def main_build_predictions():
     ipo_final_with_date_filed_home = load_processed_ipo_data('../data/processed/ipo_final_df.csv', ['All Homes Date Filed','Number of Employees'], ['Unnamed: 0', 'CIK', 'Company Name'])
     min_max_normalization_list = ['Found', 'Median Age',
                                   'Percent of People under 18 years of age',
@@ -222,6 +231,7 @@ def main():
     quantile_scaler_normalization_list = ['Offer Amount', 'Number of Employees']
     ipo_final_with_date_filed_home = normalize_ipo(ipo_final_with_date_filed_home, min_max_normalization_list, quantile_scaler_normalization_list)
     df_train, df_test = create_test_train_set(ipo_final_with_date_filed_home, 'All Homes 2 Years After Date Filed', '2 Year Home Value ratio', 'All Homes Date Filed')
+    print(df_test.head())
     #show_correlations_matrix(df_train, ['All Homes 1 Year After Date Filed', 'All Homes Lockup Expiration Date'], 'All Homes 2 Years After Date Filed', 0.5)
     #view_feature_distributions(df_train)
     feature_cols = [
@@ -243,18 +253,16 @@ def main():
         'Unemployment Rate', 'All Homes Date Filed', 'Zipcode', 'Zipcode for Distance', 'Number of Employees']
     #view_residual_feature_plots(df_train, 'All Homes 2 Years After Date Filed', feature_cols)
     #plot_single_variable_distribution_and_prob_plot(df_train,'All Homes 2 Years After Date Filed')
-    df_train_x, df_validation_x, df_train_y, df_validation_y, df_test_x, df_test_y =  prep_train_validation_test_data(df_train, df_test, 'All Homes 2 Years After Date Filed', feature_cols)
+    df_train_x, df_validation_x, df_train_y, df_validation_y, df_test_x =  prep_train_validation_test_data(df_train, df_test, 'All Homes 2 Years After Date Filed', feature_cols)
     run_ordinary_least_squares(df_train_x, df_train_y)
     #k_folds_algorithms =[['ScaledLR', ('LR', LinearRegression())],['ScaledAB', ('AB', AdaBoostRegressor())],['ScaledGBM', ('GBM', GradientBoostingRegressor())],['ScaledRF', ('RF', RandomForestRegressor(n_estimators=100))]]
     #run_k_folds(20, k_folds_algorithms,df_train_x, df_train_y)
-    predictions_validation = evaluate_model(df_train_x, df_train_y, df_validation_x, df_validation_y, 7)
-    predictions_test = evaluate_model(df_train_x, df_train_y, df_test_x, df_test_y, 7)
-    df_validation_x_with_pred = create_predictions(predictions_validation, df_validation_x, df_validation_y)
-    df_validation_x_with_pred.to_csv("data/processed/Validation_Predictions.csv", index=False)
-    df_test_x_with_pred = create_predictions(predictions_test, df_test_x, df_test_y)
-    df_test_x_with_pred.to_csv("data/processed/Test_Predictions.csv", index=False)
+    models = build_models(df_train_x, df_train_y,df_validation_x, df_validation_y, 7)
+    predictions = make_predictions_model(models, df_test_x)
+    df_test_x_with_pred = create_predictions(predictions, df_test_x, 'All Homes Date Filed')
+    df_test_x_with_pred.to_csv("../data/processed/Test_Predictions.csv", index=False)
 
-main()
+main_build_predictions()
 
 
 

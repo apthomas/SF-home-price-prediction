@@ -109,10 +109,6 @@ def add_new_ipo_data_to_csv(filename, year, base_month, end_month):
 	df = df.drop_duplicates(subset='Symbol', keep='first')
 	df.to_csv(filename, encoding='utf-8', index=False)
 
-
-
-
-
 def create_list_of_href(table_body):
 	links = table_body.find_all(href=True)
 	del links[1::2] # remove all odd links
@@ -148,7 +144,10 @@ def determine_zip_code(address):
 		return address[len(address)-10:]
 	return address[len(address)-5:]
 
-#scrape_ipo_data_from_nasdaq('test.csv', 1997, 2019, 1, 12)
-#track_href_of_ticker()
-#grab_data_from_company_ipo('https://www.nasdaq.com/markets/ipos/company/cerus-corp-11233-8004')
-add_new_ipo_data_to_csv('/Users/aaron/Development/SF-home-price-prediction/data/processed/1997-04_2019_full_ipo_data.csv', 2019, 6, 6)
+def main():
+	#scrape_ipo_data_from_nasdaq('test.csv', 1997, 2019, 1, 12)
+	#track_href_of_ticker()
+	#grab_data_from_company_ipo('https://www.nasdaq.com/markets/ipos/company/cerus-corp-11233-8004')
+	add_new_ipo_data_to_csv('/Users/aaron/Development/SF-home-price-prediction/data/processed/1997-04_2019_full_ipo_data.csv', 2019, 6, 6)
+
+main()
