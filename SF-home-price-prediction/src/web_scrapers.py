@@ -2,7 +2,7 @@ from urllib.request import Request,urlopen
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
-import requests
+
 
 def scrape_ipo_data_from_nasdaq(filename, base_year, end_year, base_month, end_month):
 	'''

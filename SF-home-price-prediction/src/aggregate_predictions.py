@@ -1,9 +1,8 @@
 import pandas as pd
-import numpy as np
 
-def load_csv(filename ):
+
+def load_csv(filename):
     future_home_prices =  pd.read_csv(filename, encoding="ISO-8859-1")
-
     return future_home_prices
 
 def aggreggate_values_by_key(df, key):
@@ -47,7 +46,6 @@ def join_zipcode_info(df, key, filename,key2, new_fields):
 
     df = pd.merge(df, df2, how='inner', left_on=key, right_on=key2)
     df = remove_columns(df, ['RegionName'])
-    print(df.head())
     return df
 
 
@@ -60,4 +58,4 @@ def main():
     df_agg = join_zipcode_info(df_agg, 'Zip Code',"../data/raw/Zip_Zhvi_AllHomes.csv", 'RegionName', ['City'] )
     df_agg.to_csv("../data/processed/Agg_Test_Predictions.csv", index=True)
 
-main()
+#main()
