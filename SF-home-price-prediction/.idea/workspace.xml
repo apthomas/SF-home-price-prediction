@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="10ba2a74-fdce-4c2a-a053-697d3d5a254f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/processed/1997-04_2019_full_ipo_data.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/processed/1997-04_2019_full_ipo_data.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/processed/test_update.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/processed/test_update.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/learning.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/learning.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/learning.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/learning.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web_scrapers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/web_scrapers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/processed/Agg_Test_Predictions.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/processed/Agg_Test_Predictions.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/aggreggate_predictions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/aggreggate_predictions.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,8 +16,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/preparation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6015">
-              <caret line="408" column="4" selection-start-line="408" selection-start-column="4" selection-end-line="408" selection-end-column="4" />
+            <state relative-caret-position="281">
+              <caret line="330" column="24" selection-start-line="330" selection-start-column="18" selection-end-line="330" selection-end-column="24" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
                 <element signature="e#181#751#1" />
@@ -34,7 +30,7 @@
         <entry file="file://$PROJECT_DIR$/src/learning.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="603">
-              <caret line="262" column="41" selection-start-line="262" selection-end-line="263" />
+              <caret line="262" column="58" selection-start-line="262" selection-start-column="58" selection-end-line="262" selection-end-column="58" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -42,13 +38,36 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/aggreggate_predictions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="25" column="17" lean-forward="true" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
+            <state relative-caret-position="768">
+              <caret line="62" column="6" selection-start-line="62" selection-start-column="6" selection-end-line="62" selection-end-column="6" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/js/d3_charts.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="989">
+              <caret line="77" lean-forward="true" selection-start-line="77" selection-end-line="77" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1142">
+              <caret line="86" selection-start-line="86" selection-end-line="86" />
+              <folding>
+                <element signature="e#2520#2527#0" expanded="true" />
+                <element signature="n#style#0;n#iframe#0;n#div#1;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="e#3443#3449#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -72,6 +91,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -81,6 +101,17 @@
       <find>plot_single_variable_distribution_and_prob_plot</find>
       <find>plt.show</find>
       <find>print</find>
+      <find>csv</find>
+      <find>rename</find>
+      <find>renam</find>
+      <find>join</find>
+      <find>concat</find>
+      <find>drop</find>
+      <find>d3.tim</find>
+      <find>d3.sca</find>
+      <find>d3.a</find>
+      <find>ticks</find>
+      <find>date</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -92,12 +123,15 @@
         <option value="$PROJECT_DIR$/src/web_scrapers.py" />
         <option value="$PROJECT_DIR$/src/learning.py" />
         <option value="$PROJECT_DIR$/src/aggreggate_predictions.py" />
+        <option value="$PROJECT_DIR$/test.html" />
+        <option value="$PROJECT_DIR$/src/js/d3_charts.js" />
+        <option value="$PROJECT_DIR$/index.html" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="width" value="3360" />
-    <option name="height" value="1440" />
+    <option name="width" value="1440" />
+    <option name="height" value="900" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -126,6 +160,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
@@ -195,19 +230,19 @@
     <frame x="0" y="0" width="3360" height="1440" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.103024855" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.103024855" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4980533" visible="true" weight="0.329927" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4980533" visible="true" weight="0.11021898" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49985024" weight="0.329927" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.329927" />
       <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4989518" weight="0.329927" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5019467" side_tool="true" visible="true" weight="0.329927" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5019467" side_tool="true" visible="true" weight="0.11021898" />
       <window_info anchor="bottom" id="Python Console" order="10" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -218,10 +253,20 @@
     <entry file="file://$PROJECT_DIR$/learning.ipynb">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/learning.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="603">
+          <caret line="262" column="58" selection-start-line="262" selection-start-column="58" selection-end-line="262" selection-end-column="58" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/preparation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6015">
-          <caret line="408" column="4" selection-start-line="408" selection-start-column="4" selection-end-line="408" selection-end-column="4" />
+        <state relative-caret-position="281">
+          <caret line="330" column="24" selection-start-line="330" selection-start-column="18" selection-end-line="330" selection-end-column="24" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#181#751#1" />
@@ -239,22 +284,43 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/learning.py">
+    <entry file="file://$PROJECT_DIR$/src/aggreggate_predictions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="603">
-          <caret line="262" column="41" selection-start-line="262" selection-end-line="263" />
+        <state relative-caret-position="768">
+          <caret line="62" column="6" selection-start-line="62" selection-start-column="6" selection-end-line="62" selection-end-column="6" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/aggreggate_predictions.py">
+    <entry file="file://$PROJECT_DIR$/src/js/d3_charts.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="25" column="17" lean-forward="true" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
+        <state relative-caret-position="989">
+          <caret line="77" lean-forward="true" selection-start-line="77" selection-end-line="77" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="735">
+          <caret line="49" column="36" lean-forward="true" selection-end-line="86" />
           <folding>
-            <element signature="e#0#19#0" expanded="true" />
+            <element signature="e#2375#2382#0" expanded="true" />
+            <element signature="n#style#0;n#iframe#0;n#div#1;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="e#4388#4394#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1142">
+          <caret line="86" selection-start-line="86" selection-end-line="86" />
+          <folding>
+            <element signature="e#2520#2527#0" expanded="true" />
+            <element signature="n#style#0;n#iframe#0;n#div#1;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="e#3443#3449#0" expanded="true" />
           </folding>
         </state>
       </provider>

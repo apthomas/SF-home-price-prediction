@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset=utf-8>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv=X-UA-Compatible content="IE=edge">
+    <link href="https://fonts.googleapis.com/css?family=Alegreya:400,700|Heebo:400,900,100" rel=stylesheet>
+    <script src=https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="src/js/d3_charts.js"></script>
+    <title>Prem LABS</title>
+    <style>
+    body {
+      background-color: linen;
+      font-size: 1.4em;
+        line-height: 1.5;
+        font-weight: 400;
+        font-family: "Alegreya", serif;
+        color: rgb(48,44,44);
+    }
+    article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary, div {
+        display: block;
+        box-sizing: border-box;
+    }
+
+
+    h1, h2, .chart{
+      font-family: "Heebo","Alegreya", serif;
+      color: #F14F1D;
+      font-size: 6.2rem;
+      letter-spacing: -.1rem;
+      text-transform:uppercase;
+    }
+    p {
+          font-family: "Heebo","Alegreya", serif;
+    }
+
+    path {
+        stroke: steelblue;
+        stroke-width: 2;
+        fill: none;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: grey;
+        stroke-width: 1;
+        shape-rendering: crispEdges;
+    }
+
+
+    </style>
+
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="jumbotron">
+            <h1>Discovering Silicon Valley Through Data</h1>
+            <p class="lead">In today's world internet is the most popular way of connecting with the people. At <a href="https://www.tutorialrepublic.com" target="_blank">tutorialrepublic.com</a> you will learn the essential web development technologies along with real life practice examples, so that you can create your own website to connect with the people around the world.</p>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <p>CSS is used for describing the presentation of web pages. CSS can save a lot of time and effort. Our CSS tutorials will help you to learn the essentials of latest CSS3, so that you can control the style and layout of your website.</p>
+                <p><a href="https://www.tutorialrepublic.com/css-tutorial/" target="_blank" class="btn btn-success">Learn More &raquo;</a></p>
+            </div>
+            <div class="col-md-6">
+                <iframe title="" aria-label="USA california zip codes choropleth map" id="datawrapper-chart-vJpuR" src="//datawrapper.dwcdn.net/vJpuR/5/" scrolling="no" frameborder="0" style="width: 0; min-width: 100% !important; border: none;" height="900"></iframe><script type="text/javascript">!function(){"use strict";window.addEventListener("message",function(a){if(void 0!==a.data["datawrapper-height"])for(var e in a.data["datawrapper-height"]){var t=document.getElementById("datawrapper-chart-"+e)||document.querySelector("iframe[src*='"+e+"']");t&&(t.style.height=a.data["datawrapper-height"][e]+"px")}})}();</script>
+            </div>
+        </div>
+        <hr>
+        <div class="row" id="ipo_scatter">
+
+        </div>
+        <footer>
+            <div class="row">
+                <div class="col-md-6">
+                    <p>Copyright &copy; Prem LABS</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
+
