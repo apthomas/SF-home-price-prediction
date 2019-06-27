@@ -220,8 +220,7 @@ def export_dataframe_to_dictionary(df, name):
     filename = 'data/processed/' + name + '.csv'
     export_csv = df.to_csv(filename, index=True, header=True)  # Don't forget to add '.csv' at the end of the path
 
-
-def create_IPO_an_Zipcode_dataframe(census_econ_cols, census_dem_cols, df_ipo, df_zip, zipcodes, zip_list):
+def update_zipcodes_dict(zipcodes, zip_list):
     exists = os.path.isfile('../data/processed/zipcodes_within_radius.txt')
     if not exists:
         zipcodes = create_zipcode_distances_dictionary(zipcodes, zip_list)
@@ -230,7 +229,10 @@ def create_IPO_an_Zipcode_dataframe(census_econ_cols, census_dem_cols, df_ipo, d
         zipcodes = {}
         with open('../data/processed/zipcodes_within_radius.txt', 'r') as f:
             zipcodes = json.load(f)
+    return zipcodes
 
+
+def create_IPO_an_Zipcode_dataframe(census_econ_cols, census_dem_cols, df_ipo, df_zip, zipcodes):
     if 'Zipcode' in census_econ_cols:
         census_econ_cols.remove('Zipcode')
 
@@ -247,12 +249,13 @@ def create_IPO_an_Zipcode_dataframe(census_econ_cols, census_dem_cols, df_ipo, d
     '''
     new_df_list = []
 
-    count = 0
     for index, row in df_ipo.iterrows():
         ipo_zipcode = row['Zipcode']
         zipcode_row = df_zip.loc[df_zip['Zipcode'] == int(ipo_zipcode)]
         headerList = join_IPO_and_Zip_Data(row['Date Filed'], row['Lockup Expiration Date'], census_econ_cols,
                                            census_dem_cols)
+        print(headerList)
+        print(zipcode_row)
         data = np.concatenate((np.array(row.values), zipcode_row.filter(headerList).values), axis=None)
         dictionary = dict(zip(ipo_header_list, data))
         dictionary['Symbol'] = index
@@ -279,7 +282,6 @@ def create_IPO_an_Zipcode_dataframe(census_econ_cols, census_dem_cols, df_ipo, d
             dictionary['Distance to IPO'] = 1
             dictionary['Zipcode for Distance'] = within_10miles[j]
             new_df_list.append(dictionary)
-
     ipo_final_df = pd.DataFrame(new_df_list)
     ipo_final_df.dropna(subset=['Median Age'], how='all', inplace=True)
     return ipo_final_df
@@ -298,9 +300,10 @@ def normalize_IPO_an_Zipcode_dataframe(normalization_list, df_ipo):
 
 
 def join_IPO_and_Zip_Data(IPO_Date_Filed, IPO_Lockup_Expiration_Date, census_econ_cols, census_dem_cols):
-    filtered_columns = census_dem_cols + census_econ_cols  # remove 'zipcode'
+    filtered_columns = census_dem_cols +census_econ_cols # remove 'zipcode'
     ipo_month_filed = IPO_Date_Filed.month
     ipo_year_filed = IPO_Date_Filed.year
+
     AllHomes_header_filed = 'All Homes ' + str(ipo_year_filed) + '-' + str(ipo_month_filed).zfill(2)
     ipo_month = IPO_Lockup_Expiration_Date.month
     ipo_year = IPO_Lockup_Expiration_Date.year
@@ -329,8 +332,6 @@ def update_ipo_list():
     df_ipo.to_csv("../data/processed/df_ipo.csv", index=True)
 
 def main():
-    web_scrapers.add_new_ipo_data_to_csv(
-        '/Users/aaron/Development/SF-home-price-prediction/data/processed/1997-04_2019_full_ipo_data.csv', 2019, 6, 6)
     df_real_estate = load_real_estate_data('../data/raw/Zip_MedianListingPrice_AllHomes.csv', 'State', 'CA')
     # data processing to load all IPO Data between 1997 and present data. This data has been scraped using code from src/web_scrapers.py
     df_ipo_list = load_data(['../data/processed/1997-04_2019_full_ipo_data.csv', '../data/raw/ipo_ritter_data.csv'])
@@ -366,6 +367,7 @@ def main():
                                                         census_econ_columns, census_dem_columns)
     df_real_estate = wrangle_real_estate_headers(df_real_estate)
     df_ipo_ritter = wrangle_ipo_headers(df_ipo_list[1])
+
     df_census = join_data(df_census_econ, df_census_dem, 'Zipcode', 'inner')
     df_zip = merge_data(df_census, df_real_estate, 'Zipcode')
     df_zip = df_replace(df_zip, ['\+', '\,'])
@@ -389,9 +391,10 @@ def main():
                           'Percent of Population with no Health Insurance Coverage',
                           'Percent of People whose Income in the Past 12 months has been Below Poverty Level',
                           'Percent of Households With Income Less Than $24,999']
-    df_ipo_all = create_IPO_an_Zipcode_dataframe(census_econ_columns, census_dem_columns, df_ipo, df_zip, zipcodes,zip_list)
+    zipcodes = update_zipcodes_dict(zipcodes, zip_list)
+    df_ipo_all = create_IPO_an_Zipcode_dataframe(census_econ_columns, census_dem_columns, df_ipo, df_zip, zipcodes)
     df_ipo_all.to_csv("../data/processed/df_ipo_all.csv", index=False)
 
 
-#main()
-update_ipo_list()
+main()
+#update_ipo_list()

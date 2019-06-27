@@ -1,0 +1,47 @@
+body {
+        background-color: linen;
+        font-size: 1.4em;
+        line-height: 1.5;
+        font-weight: 400;
+        font-family: "Alegreya", serif;
+        color: rgb(48,44,44);
+        margin-left: 40px;
+    }
+
+    .graphics{
+          margin-top: 100px;
+          margin-bottom: 100px;
+          margin-right: 150px;
+          margin-left: 80px;
+     }
+
+    article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary, div {
+        display: block;
+        box-sizing: border-box;
+    }
+
+
+    h1, h2, .chart{
+      font-family: "Heebo","Alegreya", serif;
+      color: #F14F1D;
+      font-size: 6.2rem;
+      letter-spacing: -.1rem;
+      text-transform:uppercase;
+    }
+    p {
+          font-family: "Heebo","Alegreya", serif;
+    }
+
+    path {
+        stroke: steelblue;
+        stroke-width: 2;
+        fill: none;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: grey;
+        stroke-width: 1;
+        shape-rendering: crispEdges;
+    }

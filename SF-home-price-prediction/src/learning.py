@@ -9,15 +9,8 @@ from sklearn.preprocessing import MinMaxScaler, RobustScaler, QuantileTransforme
 from sklearn import ensemble, datasets, metrics
 from sklearn.utils import shuffle
 from sklearn.metrics import mean_squared_error
-from sklearn.linear_model import LinearRegression, Lasso, ElasticNet
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, ExtraTreesRegressor, AdaBoostRegressor
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.svm import SVR
-from keras.models import Sequential
-from keras.layers import Dense, Dropout
-from keras import regularizers
 from sklearn.model_selection import KFold, cross_val_score, GridSearchCV
 from sklearn.pipeline import Pipeline
 import statsmodels.formula.api as sm

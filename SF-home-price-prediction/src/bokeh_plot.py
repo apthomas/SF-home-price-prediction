@@ -1,47 +1,87 @@
-from bokeh.plotting import figure
+import bokeh.plotting as bp
 from bokeh.models import Range1d
 from bokeh.embed import components
 import pandas as pd
 import aggregate_predictions
+from bokeh.models import HoverTool, DatetimeTickFormatter
+from bokeh.palettes import inferno
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
 
-ipo_data = aggregate_predictions.load_csv('../data/processed/df_full_ipo_date_97_to_19_silicon_valley.csv').sort_values(by='Date Filed', ascending=False)
-print(ipo_data.head(10))
+
+
+def load_graph_data(filename):
+    df = aggregate_predictions.load_csv(filename).sort_values(by='Date Filed', ascending=False)
+    df.rename(columns={'Offer Amount': 'Offer_Amount'}, inplace=True)
+    df.rename(columns={'Company Name': 'Company_Name'}, inplace=True)
+    df.rename(columns={'Date Filed': 'Date_Filed'}, inplace=True)
+    df['Date_Filed_dt'] = pd.to_datetime(df['Date_Filed'])
+    df['Date_Filed_year'] = df['Date_Filed_dt'].dt.strftime('%Y')
+    df['scaled_offers'] = df['Offer_Amount']
+    df['scaled_offers'] -= -df['scaled_offers'].min()
+    df['scaled_offers'] /=df['scaled_offers'].max()
+    df['scaled_offers'] *= 200
+    df['scaled_offers'][df['scaled_offers'] < 5] = 5
+    return df
+
+
+def create_scatter(df, x, y):
+    # Create Column Data Source that will be used by the plot
+
+    year_list = df['Date_Filed_year'].unique().tolist()
+    colors = inferno(len(year_list))
+
+    # Create a map between factor and color.
+    colormap = {}
+    for i in range(0, len(year_list)):
+        colormap[year_list[i]] = colors[i]
+    # Create a list of colors for each value that we will be looking at.
+    color = [colormap[x] for x in df['Date_Filed_year']]
+    df['color'] = color
+    source = bp.ColumnDataSource(df)
+
+    TOOLTIPS = [
+        ("Offer_Amount", "@Offer_Amount{0,0}"),
+        ("Company_Name", "@Company_Name"),
+        ("Date_Filed", "@Date_Filed"),
+        ("Symbol", "@Symbol"),
+        ("Zipcode", "@Zipcode")
+    ]
+
+    # select the tools we want
+
+    # the red and blue graphs will share this data range
+    #xr1 = Range1d(minx, maxx)
+    #yr1 = Range1d(miny, maxy)
+
+    # Get the number of colors we'll need for the plot.
 
 
 
-# create some data
-x1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-y1 = [0, 8, 2, 4, 6, 9, 5, 6, 25, 28, 4, 7]
-x2 = [2, 5, 7, 15, 18, 19, 25, 28, 9, 10, 4]
-y2 = [2, 4, 6, 9, 15, 18, 0, 8, 2, 25, 28]
-x3 = [0, 1, 0, 8, 2, 4, 6, 9, 7, 8, 9]
-y3 = [0, 8, 4, 6, 9, 15, 18, 19, 19, 25, 28]
+    # build our figures
+    #p1 = figure(x_range=xr1, y_range=yr1, tools=TOOLS, plot_width=900, plot_height=900)
+    p = bp.figure(plot_height=900, plot_width=900, x_axis_type = 'datetime',  y_axis_type="log",  title="", toolbar_location=None, sizing_mode="scale_width", x_axis_label = 'Year', y_axis_label = 'Offer Amount')
+    p.background_fill_alpha = 0
+    p.border_fill_alpha = 0
+    p.xaxis[0].formatter = DatetimeTickFormatter(months='%m/%Y')
 
-# select the tools we want
-TOOLS="pan,wheel_zoom,box_zoom,reset,save"
 
-# the red and blue graphs will share this data range
-xr1 = Range1d(start=0, end=30)
-yr1 = Range1d(start=0, end=30)
 
-# only the green will use this data range
-xr2 = Range1d(start=0, end=30)
-yr2 = Range1d(start=0, end=30)
+    #p1.scatter(x, y, size=12, color="red", alpha=0.5)
+    p.circle(x="Date_Filed_dt",y ="Offer_Amount", source=source, size='scaled_offers', color='color')
 
-# build our figures
-p1 = figure(x_range=xr1, y_range=yr1, tools=TOOLS, plot_width=300, plot_height=300)
-p1.scatter(x1, y1, size=12, color="red", alpha=0.5)
+    p.add_tools(HoverTool(tooltips=TOOLTIPS))
+    # plots can be a single PlotObject, a list/tuple, or even a dictionary
 
-p2 = figure(x_range=xr1, y_range=yr1, tools=TOOLS, plot_width=300, plot_height=300)
-p2.scatter(x2, y2, size=12, color="blue", alpha=0.5)
+    script, div = components(p)
+    print(script)
+    print(div)
 
-p3 = figure(x_range=xr2, y_range=yr2, tools=TOOLS, plot_width=300, plot_height=300)
-p3.scatter(x3, y3, size=12, color="green", alpha=0.5)
 
-# plots can be a single PlotObject, a list/tuple, or even a dictionary
-plots = {'Red': p1, 'Blue': p2, 'Green': p3}
+def main():
+    df = load_graph_data("../data/processed/df_ipo.csv")
+    create_scatter(df, 'Date Filed', 'Offer Amount')
 
-script, div = components(plots)
-#print(script)
-#print(div)
+
+main()

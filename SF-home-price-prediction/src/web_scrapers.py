@@ -150,4 +150,4 @@ def main():
 	#grab_data_from_company_ipo('https://www.nasdaq.com/markets/ipos/company/cerus-corp-11233-8004')
 	add_new_ipo_data_to_csv('/Users/aaron/Development/SF-home-price-prediction/data/processed/1997-04_2019_full_ipo_data.csv', 2019, 6, 6)
 
-main()
+#main()
