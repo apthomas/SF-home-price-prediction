@@ -47,6 +47,9 @@ def join_zipcode_info(df, key, filename,key2, new_fields):
     df = pd.merge(df, df2, how='inner', left_on=key, right_on=key2)
     df = remove_columns(df, ['RegionName'])
     return df
+def keep_only_first(df, column_attr, new_column):
+    df[new_column]  =df[column_attr][df[column_attr].duplicated(keep='first')!=True]
+    return df
 
 
 def main():
@@ -56,6 +59,7 @@ def main():
     df_agg = rename_column_names(df_agg, ['Zipcode for Distance', 'All Homes Date Filed mean', 'Pred House Price ET mean'], ['Zip Code', 'Current Mean Home Value', 'Predicted Mean Home Value in 2 Years'])
     df_agg = create_new_ratio_column(df_agg, 'Expected Percent Change Over 2 Years', 'Predicted Mean Home Value in 2 Years', 'Current Mean Home Value')
     df_agg = join_zipcode_info(df_agg, 'Zip Code',"../data/raw/Zip_Zhvi_AllHomes.csv", 'RegionName', ['City'] )
+    df_agg = keep_only_first(df_agg, 'City', 'Unique_City')
     df_agg.to_csv("../data/processed/Agg_Test_Predictions.csv", index=True)
 
-#main()
+main()
