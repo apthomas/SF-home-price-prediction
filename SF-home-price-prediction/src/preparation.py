@@ -396,5 +396,8 @@ def main():
     df_ipo_all.to_csv("../data/processed/df_ipo_all.csv", index=False)
 
 
-main()
+if __name__ == "__main__":
+    print("we are wrangling data")
+    main()
+
 #update_ipo_list()

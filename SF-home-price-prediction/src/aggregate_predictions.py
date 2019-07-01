@@ -62,4 +62,6 @@ def main():
     df_agg = keep_only_first(df_agg, 'City', 'Unique_City')
     df_agg.to_csv("../data/processed/Agg_Test_Predictions.csv", index=True)
 
-main()
+if __name__ == "__main__":
+    print("we are aggregating data and predictions")
+    main()

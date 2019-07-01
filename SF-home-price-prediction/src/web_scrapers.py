@@ -144,10 +144,16 @@ def determine_zip_code(address):
 		return address[len(address)-10:]
 	return address[len(address)-5:]
 
-def main():
+def create_ipo_dataset():
 	#scrape_ipo_data_from_nasdaq('test.csv', 1997, 2019, 1, 12)
 	#track_href_of_ticker()
 	#grab_data_from_company_ipo('https://www.nasdaq.com/markets/ipos/company/cerus-corp-11233-8004')
+
+def main():
 	add_new_ipo_data_to_csv('/Users/aaron/Development/SF-home-price-prediction/data/processed/1997-04_2019_full_ipo_data.csv', 2019, 6, 6)
 
+
+if __name__ == "__main__":
+    print("we are scraping data")
+    main()
 #main()

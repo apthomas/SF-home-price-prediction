@@ -31,7 +31,6 @@ def create_scatter(df, x, y):
 
     year_list = df['Date_Filed_year'].unique().tolist()
     colors = inferno(len(year_list))
-
     # Create a map between factor and color.
     colormap = {}
     for i in range(0, len(year_list)):
@@ -41,43 +40,53 @@ def create_scatter(df, x, y):
     df['color'] = color
     source = bp.ColumnDataSource(df)
 
-    TOOLTIPS = [
+    TOOLTIPS_P = [
         ("Offer_Amount", "$@Offer_Amount{0,0}"),
         ("Company_Name", "@Company_Name"),
         ("Date_Filed", "@Date_Filed"),
         ("Symbol", "@Symbol"),
         ("Zipcode", "@Zipcode")
     ]
-
-    # select the tools we want
-
-    # the red and blue graphs will share this data range
-    #xr1 = Range1d(minx, maxx)
-    #yr1 = Range1d(miny, maxy)
-
-    # Get the number of colors we'll need for the plot.
-
-
-
-    # build our figures
-    #p1 = figure(x_range=xr1, y_range=yr1, tools=TOOLS, plot_width=900, plot_height=900)
-    p = bp.figure(plot_height=900, plot_width=1200, x_axis_type = 'datetime',  y_axis_type="log",  title="", toolbar_location=None, sizing_mode="scale_width", x_axis_label = 'Year', y_axis_label = 'Offer Amount')
+    p = bp.figure(plot_height=900, plot_width=1250, x_axis_type = 'datetime',  y_axis_type="log",  title="", toolbar_location=None, sizing_mode="scale_width", x_axis_label = 'Year', y_axis_label = 'Offer Amount')
     p.background_fill_alpha = 0
     p.border_fill_alpha = 0
     p.xaxis[0].formatter = DatetimeTickFormatter(months='%m/%Y')
-
     p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
-
     p.yaxis.formatter = NumeralTickFormatter(format="$ 0,0[.]00")
-
-
-    #p1.scatter(x, y, size=12, color="red", alpha=0.5)
     p.circle(x="Date_Filed_dt",y ="Offer_Amount", source=source, size='scaled_offers', color='color', fill_alpha=0.8,line_color='#7c7e71',line_width=0.5, line_alpha=0.5)
+    p.add_tools(HoverTool(tooltips=TOOLTIPS_P))
 
-    p.add_tools(HoverTool(tooltips=TOOLTIPS))
-    # plots can be a single PlotObject, a list/tuple, or even a dictionary
 
-    script, div = components(p)
+
+    grouped_by_year = df.groupby(['Date_Filed_year']).agg({
+        'Offer_Amount':['sum','mean', 'count']
+    })
+    grouped_by_year.columns = ['_'.join(col).strip() for col in grouped_by_year.columns.values]
+    grouped_by_year.reset_index(inplace=True)
+    grouped_by_year['Date_Filed_simple'] = pd.to_datetime(grouped_by_year['Date_Filed_year'], format="%Y")
+    color = [colormap[x] for x in grouped_by_year['Date_Filed_year']]
+    grouped_by_year['color'] = color
+    grouped_source = bp.ColumnDataSource(grouped_by_year)
+
+    TOOLTIPS_H = [
+        ("Sum_Offer_Amount", "$@Offer_Amount_sum{0,0}"),
+        ("Year", "@Date_Filed_year")
+    ]
+
+    h = bp.figure(plot_height=900, plot_width=1250, x_axis_type = 'datetime',  title="", toolbar_location=None, sizing_mode="scale_width", x_axis_label = 'Year', y_axis_label = 'Sum of Offer Amounts')
+    h.background_fill_alpha = 0
+    h.border_fill_alpha = 0
+    h.xaxis[0].formatter = DatetimeTickFormatter(months='%m/%Y')
+    h.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
+    h.yaxis.formatter = NumeralTickFormatter(format="$ 0,0[.]00")
+    h.vbar(x='Date_Filed_simple', top='Offer_Amount_sum', width=100, color='color', source=grouped_source)
+    h.add_tools(HoverTool(tooltips=TOOLTIPS_H, mode='vline'))
+
+    # plots can be a single Bokeh Model, a list/tuple, or even a dictionary
+    plots = {'scatter': p, 'bar': h}
+
+    script, div = components(plots)
+
     print(script)
     print(div)
 
@@ -86,5 +95,6 @@ def main():
     df = load_graph_data("../data/processed/df_ipo.csv")
     create_scatter(df, 'Date Filed', 'Offer Amount')
 
-
-main()
+if __name__ == "__main__":
+    print("we are building plots")
+    main()

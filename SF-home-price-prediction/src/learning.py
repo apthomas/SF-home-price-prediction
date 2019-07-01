@@ -255,7 +255,9 @@ def main_build_predictions():
     df_test_x_with_pred = create_predictions(predictions, df_test_x, 'All Homes Date Filed')
     df_test_x_with_pred.to_csv("../data/processed/Test_Predictions.csv", index=False)
 
-main_build_predictions()
+if __name__ == "__main__":
+    print("we are learning")
+    main_build_predictions()
 
 
 
