@@ -12,6 +12,9 @@ The default assumption is that these tech IPOs will bring in huge demand and dri
 Most real estate agents in the Bay Area mention the IPO's as the single biggest reason to buy property NOW. I've been told "Buy now or you might never be able to" numerous times. 
 
 Given this large expectation of an expected surge in demand, I am modeling the change in Home Prices by Zipcode. In the Bay Area there exist great variations in median income, demographic information, and home prices across zipcodes. Even zipcodes that are right next to eachother. These new millionaires will be starting families and investing in locations where they can build their lives and futures, so the variance in home prices across zip codes will grow. This effect is what I will be modeling and predicting.
+
+## Public Location
+<http://www.premiolabs.com>
  
 ## Datasets
 - Data of All US Filed IPO's from 1996 to present day
