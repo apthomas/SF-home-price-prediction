@@ -53,14 +53,14 @@ def keep_only_first(df, column_attr, new_column):
 
 
 def main():
-    future_home_prices = load_csv("../data/processed/Test_Predictions.csv")
+    future_home_prices = load_csv("../data/processed/Test_Predictions_encoded.csv")
     df_agg = aggreggate_values_by_key(future_home_prices, 'Zipcode for Distance')
     df_agg = remove_columns(df_agg, ['Pred House Price ET count', 'Pred House Price GB mean', 'Pred House Price RF mean'])
     df_agg = rename_column_names(df_agg, ['Zipcode for Distance', 'All Homes Date Filed mean', 'Pred House Price ET mean'], ['Zip Code', 'Current Mean Home Value', 'Predicted Mean Home Value in 2 Years'])
     df_agg = create_new_ratio_column(df_agg, 'Expected Percent Change Over 2 Years', 'Predicted Mean Home Value in 2 Years', 'Current Mean Home Value')
     df_agg = join_zipcode_info(df_agg, 'Zip Code',"../data/raw/Zip_Zhvi_AllHomes.csv", 'RegionName', ['City'] )
     df_agg = keep_only_first(df_agg, 'City', 'Unique_City')
-    df_agg.to_csv("../data/processed/Agg_Test_Predictions.csv", index=True)
+    df_agg.to_csv("../data/processed/Agg_Test_Predictions_Encoded.csv", index=True)
 
 if __name__ == "__main__":
     print("we are aggregating data and predictions")

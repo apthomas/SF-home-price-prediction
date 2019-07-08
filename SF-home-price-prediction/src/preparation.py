@@ -254,8 +254,6 @@ def create_IPO_an_Zipcode_dataframe(census_econ_cols, census_dem_cols, df_ipo, d
         zipcode_row = df_zip.loc[df_zip['Zipcode'] == int(ipo_zipcode)]
         headerList = join_IPO_and_Zip_Data(row['Date Filed'], row['Lockup Expiration Date'], census_econ_cols,
                                            census_dem_cols)
-        print(headerList)
-        print(zipcode_row)
         data = np.concatenate((np.array(row.values), zipcode_row.filter(headerList).values), axis=None)
         dictionary = dict(zip(ipo_header_list, data))
         dictionary['Symbol'] = index
