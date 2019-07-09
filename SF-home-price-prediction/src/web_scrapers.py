@@ -30,12 +30,12 @@ def scrape_ipo_data_from_nasdaq(filename, base_year, end_year, base_month, end_m
 			
 			rows = table_body.find_all('tr')
 			for row in rows:
-			    cols = row.find_all('td')
-			    cols = [ele.text.strip() for ele in cols]
-			    cols[2] = cols[2].replace('$','')
-			    cols[2] = cols[2].replace(',','')
-			    if (len(cols) == len(headers)):
-			    	data.append([ele for ele in cols if ele]) # Get rid of empty values
+				cols = row.find_all('td')
+				cols = [ele.text.strip() for ele in cols]
+				cols[2] = cols[2].replace('$','')
+				cols[2] = cols[2].replace(',','')
+				if (len(cols) == len(headers)):
+					data.append([ele for ele in cols if ele]) # Get rid of empty values
 			if (len(data[0])== len(headers) or len(data[1])== len(headers)):
 				links = create_list_of_href(table_body)
 				print(links)
@@ -145,15 +145,13 @@ def determine_zip_code(address):
 	return address[len(address)-5:]
 
 def create_ipo_dataset():
-	#scrape_ipo_data_from_nasdaq('test.csv', 1997, 2019, 1, 12)
-	#track_href_of_ticker()
-	#grab_data_from_company_ipo('https://www.nasdaq.com/markets/ipos/company/cerus-corp-11233-8004')
+	scrape_ipo_data_from_nasdaq('test.csv', 1997, 2019, 1, 12)
+	track_href_of_ticker()
+	grab_data_from_company_ipo('https://www.nasdaq.com/markets/ipos/company/cerus-corp-11233-8004')
 
 def main():
-	add_new_ipo_data_to_csv('/Users/aaron/Development/SF-home-price-prediction/data/processed/1997-04_2019_full_ipo_data.csv', 2019, 6, 6)
+	add_new_ipo_data_to_csv('/Users/aaron/Development/SF-home-price-prediction/data/processed/1997-04_2019_full_ipo_data.csv', 2019, 6, 7)
 
-
-if __name__ == "__main__":
-    print("we are scraping data")
-    main()
-#main()
+if __name__ == '__main__':
+	print("we are scraping data")
+	#main()

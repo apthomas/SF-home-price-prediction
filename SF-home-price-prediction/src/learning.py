@@ -76,11 +76,13 @@ def create_historical_encoded_df(df, date_field, location_field, time_window, fe
         filtered_rows.index = filtered_rows.index.map(str)
         filtered_rows['date_test'] = (filtered_rows[date_field] -row[date_field])
         filtered_rows["time_weight"] = 1.0-(filtered_rows['date_test']/np.timedelta64(time_window, 'Y'))
+        filtered_rows = filtered_rows.replace(['--'], [1], regex=True)
+        filtered_rows['Number of Employees'] = pd.to_numeric(filtered_rows['Number of Employees'])
+
         for i in range(0, len(ipo_cols)):
             dict[ipo_cols[i] + '_weighted'] = filtered_rows["time_weight"].dot(filtered_rows[ipo_cols[i]])
         encoded_data.append(dict)
     ipo_final_ecoded_df = pd.DataFrame(encoded_data)
-    ipo_final_ecoded_df.to_csv("../data/processed/df_ipo_encoded_test.csv", index=False)
     return ipo_final_ecoded_df
 
 
@@ -256,8 +258,8 @@ def main_build_predictions():
                                   'Percent of Households With Income Less Than $24,999', 'Distance to IPO_weighted']
     quantile_scaler_normalization_list = ['Offer Amount_weighted', 'Number of Employees_weighted']
     ipo_final_with_date_filed_home = normalize_ipo(ipo_final_with_date_filed_home, min_max_normalization_list, quantile_scaler_normalization_list)
+    print(ipo_final_with_date_filed_home.isnull().sum(axis = 0))
     df_train, df_test = create_test_train_set(ipo_final_with_date_filed_home, 'All Homes 2 Years After Date Filed', '2 Year Home Value ratio', 'All Homes Date Filed')
-    print(df_test.head())
     #show_correlations_matrix(df_train, ['All Homes 1 Year After Date Filed', 'All Homes Lockup Expiration Date'], 'All Homes 2 Years After Date Filed', 0.5)
     #view_feature_distributions(df_train)
     feature_cols = [
@@ -276,11 +278,11 @@ def main_build_predictions():
         'Percent of People who are White',
         'Percent of People whose Income in the Past 12 months has been Below Poverty Level',
         'Percent of Population with no Health Insurance Coverage',
-        'Unemployment Rate', 'All Homes Date Filed','Zipcode for Distance', 'Number of Employees_weighted']
+        'Unemployment Rate', 'All Homes Date Filed','All Homes 1 Year Before Date Filed', 'Zipcode for Distance', 'Number of Employees_weighted']
     #view_residual_feature_plots(df_train, 'All Homes 2 Years After Date Filed', feature_cols)
     #plot_single_variable_distribution_and_prob_plot(df_train,'All Homes 2 Years After Date Filed')
     df_train_x, df_validation_x, df_train_y, df_validation_y, df_test_x =  prep_train_validation_test_data(df_train, df_test, 'All Homes 2 Years After Date Filed', feature_cols)
-    run_ordinary_least_squares(df_train_x, df_train_y)
+    #run_ordinary_least_squares(df_train_x, df_train_y)
     #k_folds_algorithms =[['ScaledLR', ('LR', LinearRegression())],['ScaledAB', ('AB', AdaBoostRegressor())],['ScaledGBM', ('GBM', GradientBoostingRegressor())],['ScaledRF', ('RF', RandomForestRegressor(n_estimators=100))]]
     #run_k_folds(20, k_folds_algorithms,df_train_x, df_train_y)
     models = build_models(df_train_x, df_train_y,df_validation_x, df_validation_y, 7)
@@ -288,7 +290,7 @@ def main_build_predictions():
     df_test_x_with_pred = create_predictions(predictions, df_test_x, 'All Homes Date Filed')
     df_test_x_with_pred.to_csv("../data/processed/Test_Predictions_encoded.csv", index=False)
 
-def create_encoding_historical_zipcode_data():
+def create_encoding_historical_zipcode_data(data):
     feature_cols = [
         'Mean Household Income Estimate (dollars)',
         'Mean Travel Time to Work Estimate (minutes)', 'Median Age',
@@ -304,17 +306,19 @@ def create_encoding_historical_zipcode_data():
         'Percent of People who are White',
         'Percent of People whose Income in the Past 12 months has been Below Poverty Level',
         'Percent of Population with no Health Insurance Coverage',
-        'Unemployment Rate', 'All Homes Date Filed','All Homes 2 Years After Date Filed', 'Date Filed', 'Zipcode for Distance']
+        'Unemployment Rate', 'All Homes Date Filed','All Homes 1 Year Before Date Filed', 'All Homes 2 Years After Date Filed', 'Date Filed', 'Zipcode for Distance']
     ipo_cols = ['Offer Amount', 'Number of Employees', 'Found', 'Distance to IPO']
-
-    ipo_final_with_date_filed_home = load_processed_ipo_data('../data/processed/ipo_final_df.csv', ['All Homes Date Filed','Number of Employees'], ['Unnamed: 0', 'CIK', 'Company Name'])
+    drop_columns = ['Unnamed: 0', 'CIK', 'Company Name']
+    ipo_final_with_date_filed_home = load_processed_ipo_data(data, ['All Homes Date Filed','Number of Employees'], drop_columns)
     #ipo_final_with_date_filed_home['Date Filed'] = pd.to_datetime(ipo_final_with_date_filed_home['Date Filed'], errors='coerce', format='%Y-%m-%d')
-    create_historical_encoded_df(ipo_final_with_date_filed_home, 'Date Filed', 'Zipcode for Distance', 2, feature_cols, ipo_cols)
+    ipo_final_ecoded_df = create_historical_encoded_df(ipo_final_with_date_filed_home, 'Date Filed', 'Zipcode for Distance', 2, feature_cols, ipo_cols)
+    ipo_final_ecoded_df.to_csv("../data/processed/df_ipo_encoded_test.csv", index=False)
+
 
 if __name__ == "__main__":
     print("we are learning")
-    main_build_predictions()
-    #create_encoding_historical_zipcode_data()
+    create_encoding_historical_zipcode_data('../data/processed/df_ipo_all.csv')
+    #main_build_predictions()
 
 
 

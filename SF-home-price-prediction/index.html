@@ -34,7 +34,11 @@
     }
 
     #header2 {
-      color: black;
+      font-family: "Heebo","Alegreya", serif;
+      color: #F14F1D;
+      font-size: 1.8rem;
+      letter-spacing: -.1rem;
+      text-transform:uppercase;
 
     }
 
@@ -77,12 +81,19 @@
       padding-top: 50px;
     }
     .spacing-sidebar {
-      padding-top: 280px;
+      padding-top: 250px;
     }
 
     #footer {
         clear:both;
         padding:5px 10px;
+    }
+    .methodology{
+        clear:both;
+        padding:5px 10px;
+    }
+    #full_page{
+        padding-top: 1050px;
     }
     </style>
    <script type="text/javascript">
@@ -129,9 +140,9 @@
         </div>
         <div id="main_data">
                         <div class="spacing-graph"></div>
-<div class="bk-root" id="5c57bace-7f25-478c-b8b7-f92d298c8a6a" data-root-id="1002"></div>
+            <div class="bk-root" id="5c57bace-7f25-478c-b8b7-f92d298c8a6a" data-root-id="1002"></div>
             <div class="spacing-graph"></div>
-<div class="bk-root" id="d57b7e19-71ea-4940-abea-392fe4332a4e" data-root-id="1048"></div>
+            <div class="bk-root" id="d57b7e19-71ea-4940-abea-392fe4332a4e" data-root-id="1048"></div>
             <div class="spacing-map"></div>
             <iframe title="" aria-label="USA california zip codes choropleth map" id="datawrapper-chart-vJpuR" src="//datawrapper.dwcdn.net/vJpuR/7/" scrolling="no" frameborder="0" style="width: 0; min-width: 100% !important; border: none;" height="900"></iframe><script type="text/javascript">!function(){"use strict";window.addEventListener("message",function(a){if(void 0!==a.data["datawrapper-height"])for(var e in a.data["datawrapper-height"]){var t=document.getElementById("datawrapper-chart-"+e)||document.querySelector("iframe[src*='"+e+"']");t&&(t.style.height=a.data["datawrapper-height"][e]+"px")}})}();</script>            <div class="row" id="ipo_scatter">
             <br>
@@ -140,9 +151,9 @@
         </div>
         <div id="sidebar_description">
             <h2>Comparison of IPO's</h2>
-            <p> <strong> Silicon Valley is one of the world’s most liveable areas. One of the key's to that liveability, is our ability to buy a home and create roots.  How will recently filed IPO's effect this?</strong></p>
-            <p class="lead">"Everybody is getting pumped about the new wave of tech IPOs in 2019 and 2020. These SF Bay Area tech IPOs include Uber, Lyft, Airbnb, Slack, Pinterest, and more.</p>
-            <p> The default assumption is that these tech IPOs will bring in huge demand and drive SF Bay Area real estate prices up. After all, these soon-to-be public companies are worth billions and employ tens of thousands of sub-35 year-old-employees looking to establish roots." - Financial Samurai </p>
+            <p> <strong> Silicon Valley is one of the world’s most liveable areas. One of the keys to that liveability, is our ability to buy a home and create roots.  How will recently filed IPO's affect this?</strong></p>
+            <p class="lead"><i>"Everybody is getting pumped about the new wave of tech IPOs in 2019 and 2020. These SF Bay Area tech IPOs include Uber, Lyft, Airbnb, Slack, Pinterest, and more.</i></p>
+            <p><i> The default assumption is that these tech IPOs will bring in huge demand and drive SF Bay Area real estate prices up. After all, these soon-to-be public companies are worth billions and employ tens of thousands of sub-35 year-old-employees looking to establish roots."</i> - Financial Samurai </p>
             <p> Most real estate agents in the Bay Area mention the IPO's as the single biggest reason to buy property NOW. I've been told "Buy now or you might never be able to" numerous times.</p>
             <p> Let's inspect how the current IPO's in Silicon Valley compare to those of the last 20 years.</p>
             <div class="spacing-graph"></div>
@@ -153,9 +164,8 @@
                 taken the throne as the year with the most and biggest IPO's in Silicon Valley. It's shaping up to even surpass the dot-com boom of 1999.</p>
 
             <div class="spacing-sidebar"></div>
-            <div class="spacing-map"></div>
             <h2>Predicted Home Value Patchwork</h2>
-            <p> <strong>How will this effect the median home values across the area? </strong></p>
+            <p> <strong>How will this affect the median home values across the area? </strong></p>
             <p> Given this large expected surge in demand, I have predicted the median home values across Silicon Valley by Zipcode.
                 In the valley, there exists great variations in median income, demographic information, and home prices across Zipcode's, even those that are right neighbors.</p>
 
@@ -163,6 +173,37 @@
                 These new millionaires will be starting families and investing in locations where they can build their lives and futures, so the variance in home prices across zip codes will grow.
                 Now, given these findings - the dark blue regions are those likely to see the highest home value growth.</p>
             </p>
+        </div>
+        <div id ='full_page'>
+            <div id = "methodology">
+                <h2>Methodoology</h2>
+                <p> <strong> How was this algorithm created? What are the underlying assumptions for these predictions? </strong></p>
+                <p> To solve this problem I implemented a machine learning approach. All code can be found <a href="https://github.com/apthomas/SF-home-price-prediction">here.</a></p>
+                <p> Data has been gathered and scraped from four sources.</p>
+                <ol>
+                  <li>Data of All US Filed IPO's from 1996 to present day -- scraped from Nasdaq.com, IPO Filings Activity</li>
+                  <li>IPO Data compiled by John Ritter between 1990 - 2018</li>
+                  <li>2017 US Census Data -- both econometrics and demographic statistics grouped by zipcode </li>
+                  <li>Silicon Valley + San Francisco Zip Code Information</li>
+                  <li>Zillow Home Value Index of All Homes by Zipcode over Time</li>
+                </ol>
+                <p> I combined all the datasets above into one dataset that held the information of all Home Values(previous, present, and future), and census statistics for all zipcodes in a 10 mile radius for every IPO in Silicon Valley. This dataset can be found <a href="https://github.com/apthomas/SF-home-price-prediction/blob/master/SF-home-price-prediction/data/processed/df_ipo_all.csv"> here. </a></p>
+                <p> With the new dataset I encoded every IPO and the IPO's in the subsequent two years in the same zipcode radius into one feature to capture all IPO effects (current and future), weighting the current more because of lockup effects and friction to buy homes, into one feature.</p>
+                <p> This new feature set now included the zipcode, the date of IPO filing, the encoding of all IPO information in the zipcode which is weighted, census statistics about the zipcode, and Home Values(previous, present, and future)  </p>
+                <p> For training the Random Forest regression model, I segmented the data for all IPO filings before June of 2017. The goal here is to predict home prices by zipcode in 2 years given the current set of IPO filings, so to train the label that is regressed on, Home Prices in 2 Years, must be known.</p>
+                <p> The predictions are then made for all IPO's filed after June of 2017, and currently in the chloropleth graph I am predicting for home prices 2 years from today (July, 2021). </p>
+
+            </div>
+            <div id="conclusion">
+                <h2>Conclusions</h2>
+                <p> <strong> What can we learn from this information? </strong></p>
+                <ol>
+                  <li>Given the concentration of IPO's filed for 2019 in San Francsico proper, I predict a major increase in home prices for the nearby surrounding areas of San Francisco. The greatest increases in home prices will be in the undervalued areas below the city stretching from Pacifica and Millbrae and up to the bottom of San Francisco in neighborhoods like Balboa Park, Excelsior, and Bayview. This makes sense, the housing market in San Francisco is saturated and highly prices so people will venture outside the city limits. </li>
+                  <li>The area surrounding the bottom area of the San Francisco Bay, includes Mountain View, Sunnyvale, Santa Clara, northern San Jose, Milpitas, Fremont, and Newark will see major increases over the next 2 years, averaging 23%. These areas are generally lower cost and are commutable to most of the large corporations in Silicon Valley.</li>
+                  <li>The IPO Filing's of 2019 are the largest in the history of Silicon Valley, in terms of Total Offer Amount's - 2019 dominates all other years with the exception of the dot-com boom in 1999.</li>
+                  <li>Outer areas of Silicon Valley like Lexington Hills and Morgan Hills, which are more rural and open spaces will see major increases over the next 2 years, averaging 21.5%. </li>
+                </ol>
+            </div>
         </div>
         <div id="footer"
             <div class="row">

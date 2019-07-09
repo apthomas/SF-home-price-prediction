@@ -45,11 +45,12 @@ def wrangle_real_estate_data(df, zip_list, drop_columns):
 
 
 def wrangle_IPO_data(df, zip_list):
-    df['Date Filed'] = pd.to_datetime(df['Date Filed'], errors='coerce', format='%m/%d/%Y')
+    df['Date Filed'] = pd.to_datetime(df['Date Filed'], format='%Y-%m-%d')
     df['Lockup Expiration Date'] = pd.to_datetime(df['Lockup Expiration Date'], errors='coerce', format='%m/%d/%Y')
     df = df[df['Zipcode'].isin(zip_list)]
-    df = df.drop(['Lockup Expiration Date', 'Lockup Period'], axis=1)
+    df = df.drop(['Lockup Expiration Date'], axis=1)
     df['Lockup Expiration Date'] = df['Date Filed'] + timedelta(days=180)
+    df  = df[df['Date Filed']> df['Date Filed'].min()+ timedelta(days=366)]
     return df
 
 
@@ -71,7 +72,7 @@ def wrangle_census_data(df_census_econ, df_census_dem, zip_list, census_econ_col
         'Estimate; COMMUTING TO WORK - Mean travel time to work (minutes)': 'Mean Travel Time to Work Estimate (minutes)'},
         inplace=True)
     df_census_econ.rename(columns={
-        'Percent; INCOME AND BENEFITS (IN 2017| INFLATION-ADJUSTED DOLLARS) - Total households - $200,000 or more': 'Percent of Households with Income Greater than $200,000'},
+        'Percent; INCOME AND BENEFITS (IN 2017 INFLATION-ADJUSTED DOLLARS) - Total households - $200,000 or more': 'Percent of Households with Income Greater than $200,000'},
         inplace=True)
     df_census_econ.rename(columns={
         'Estimate; INCOME AND BENEFITS (IN 2017 INFLATION-ADJUSTED DOLLARS) - Total households - Median household income (dollars)': 'Median Household Income Estimate (dollars)'},
@@ -156,7 +157,7 @@ def wrangle_ipo_headers(df):
 
 
 def join_data(df1, df2, key, join_type):
-    df = df1.set_index(key).join(df2.set_index(key), how=join_type)
+    df = df1.set_index(key).merge(df2, on=key, how=join_type)
     return df
 
 
@@ -238,29 +239,27 @@ def create_IPO_an_Zipcode_dataframe(census_econ_cols, census_dem_cols, df_ipo, d
 
     if 'Zipcode' in census_dem_cols:
         census_dem_cols.remove('Zipcode')
-    ipo_header_list = list(df_ipo.columns.values) + census_econ_cols + census_dem_cols + ['All Homes Date Filed',
+    ipo_header_list = list(df_ipo.columns.values) +census_dem_cols+census_econ_cols + ['All Homes Date Filed',
                                                                                           'All Homes Lockup Expiration Date',
-                                                                                          'All Homes 1 Year After Date Filed',
+                                                                                          'All Homes 1 Year Before Date Filed',
                                                                                           'All Homes 2 Years After Date Filed']
     '''
     Distance from IPO   = estimate is .2 if in the same zipcode as IPO
                         = estimate is 0.5 if not in same zip code as IPO and less than 5 miles from zipcode to IPO
                         = estimate is 1 if greater than 5 and less than 10 miles from zipcode to IPO
     '''
-    new_df_list = []
 
+    new_df_list = []
     for index, row in df_ipo.iterrows():
-        ipo_zipcode = row['Zipcode']
+        ipo_zipcode = str(row['Zipcode'])
         zipcode_row = df_zip.loc[df_zip['Zipcode'] == int(ipo_zipcode)]
-        headerList = join_IPO_and_Zip_Data(row['Date Filed'], row['Lockup Expiration Date'], census_econ_cols,
-                                           census_dem_cols)
+        headerList = join_IPO_and_Zip_Data(row['Date Filed'], row['Lockup Expiration Date'], census_econ_cols,census_dem_cols)
         data = np.concatenate((np.array(row.values), zipcode_row.filter(headerList).values), axis=None)
         dictionary = dict(zip(ipo_header_list, data))
         dictionary['Symbol'] = index
         dictionary['Distance to IPO'] = .2
         dictionary['Zipcode for Distance'] = ipo_zipcode
         new_df_list.append(dictionary)
-
         within_5miles = zipcodes[ipo_zipcode][0]
         within_10miles = zipcodes[ipo_zipcode][1]
         for i in range(0, len(within_5miles)):
@@ -282,6 +281,7 @@ def create_IPO_an_Zipcode_dataframe(census_econ_cols, census_dem_cols, df_ipo, d
             new_df_list.append(dictionary)
     ipo_final_df = pd.DataFrame(new_df_list)
     ipo_final_df.dropna(subset=['Median Age'], how='all', inplace=True)
+    ipo_final_df.dropna(subset=['All Homes Date Filed'], how='all', inplace=True)
     return ipo_final_df
 
 
@@ -307,18 +307,17 @@ def join_IPO_and_Zip_Data(IPO_Date_Filed, IPO_Lockup_Expiration_Date, census_eco
     ipo_year = IPO_Lockup_Expiration_Date.year
     AllHomes_header_lockup = 'All Homes ' + str(ipo_year) + '-' + str(ipo_month).zfill(2)
 
-    AllHomes_header_filed_1_yr = 'All Homes ' + str(int(ipo_year_filed) + 1) + '-' + str(ipo_month_filed).zfill(2)
+    AllHomes_header_filed_1_yr_ago = 'All Homes ' + str(int(ipo_year_filed) - 1) + '-' + str(ipo_month_filed).zfill(2)
 
     AllHomes_header_filed_2_yr = 'All Homes ' + str(int(ipo_year_filed) + 2) + '-' + str(ipo_month_filed).zfill(2)
 
     filtered_columns = filtered_columns + [AllHomes_header_filed, AllHomes_header_lockup,
-                                           AllHomes_header_filed_1_yr,
+                                           AllHomes_header_filed_1_yr_ago,
                                            AllHomes_header_filed_2_yr]
     return filtered_columns
 
-def update_ipo_list():
-    web_scrapers.add_new_ipo_data_to_csv(
-        '/Users/aaron/Development/SF-home-price-prediction/data/processed/1997-04_2019_full_ipo_data.csv', 2019, 6, 6)
+def update_ipo_list(year, start_month, end_month):
+    web_scrapers.add_new_ipo_data_to_csv('../data/processed/1997-04_2019_full_ipo_data.csv', year, start_month, end_month)
     df_ipo_list = load_data(['../data/processed/1997-04_2019_full_ipo_data.csv', '../data/raw/ipo_ritter_data.csv'])
     zipcodes, zip_list = create_zipcode_list(
         ['../data/raw/Santa_Clara_County_Zipcodes.csv', '../data/raw/San_Mateo_County_Zipcodes.csv',
@@ -330,16 +329,14 @@ def update_ipo_list():
     df_ipo.to_csv("../data/processed/df_ipo.csv", index=True)
 
 def main():
-    df_real_estate = load_real_estate_data('../data/raw/Zip_MedianListingPrice_AllHomes.csv', 'State', 'CA')
+    df_real_estate = load_real_estate_data('../data/raw/Zip_Zhvi_AllHomes.csv', 'State', 'CA')
     # data processing to load all IPO Data between 1997 and present data. This data has been scraped using code from src/web_scrapers.py
-    df_ipo_list = load_data(['../data/processed/1997-04_2019_full_ipo_data.csv', '../data/raw/ipo_ritter_data.csv'])
-    df_census_list = load_data(['../data/raw/zip_census_bureau_economic_characteristics_2017.csv',
-                                '../data/raw/zip_census_bureau_age_race_2017.csv'])
+    df_ipo_list = load_data(['../data/processed/df_ipo.csv', '../data/raw/ipo_ritter_data.csv'])
+    df_census_list = load_data(['../data/raw/zip_census_bureau_economic_characteristics_2017.csv',                                '../data/raw/zip_census_bureau_age_race_2017.csv'])
     zipcodes, zip_list = create_zipcode_list(
         ['../data/raw/Santa_Clara_County_Zipcodes.csv', '../data/raw/San_Mateo_County_Zipcodes.csv',
          '../data/raw/San_Francisco_County_Zipcodes.csv', '../data/raw/Alameda_County_Zipcodes.csv'])
-    df_real_estate = wrangle_real_estate_data(df_real_estate, zip_list,
-                                              ['City', 'State', 'Metro', 'CountyName', 'SizeRank'])
+    df_real_estate = wrangle_real_estate_data(df_real_estate, zip_list,['City', 'State', 'Metro', 'CountyName', 'SizeRank'])
     df_ipo = wrangle_IPO_data(df_ipo_list[0], zip_list)
     census_econ_columns = ['Zipcode',
                            'Unemployment Rate',
@@ -365,12 +362,14 @@ def main():
                                                         census_econ_columns, census_dem_columns)
     df_real_estate = wrangle_real_estate_headers(df_real_estate)
     df_ipo_ritter = wrangle_ipo_headers(df_ipo_list[1])
-
+    df_ipo_ritter = df_ipo_ritter.drop(['Found'], axis=1)
     df_census = join_data(df_census_econ, df_census_dem, 'Zipcode', 'inner')
     df_zip = merge_data(df_census, df_real_estate, 'Zipcode')
     df_zip = df_replace(df_zip, ['\+', '\,'])
+    print(df_zip['All Homes 2019-05'])
     df_ipo = join_data(df_ipo, df_ipo_ritter, 'Symbol', 'left')
     df_ipo = drop_columns_and_nans(df_ipo, ['IPO Name', 'Offer date', 'CUSIP', 'PERM'], ['CIK'])
+    df_ipo['Found'] = 2019.0 - df_ipo['Found']
     normalization_list = ['Offer Amount', 'Number of Employees', 'Found', 'Median Age',
                           'Percent of People under 18 years of age',
                           'Percent of People 65 years and over',
@@ -396,6 +395,5 @@ def main():
 
 if __name__ == "__main__":
     print("we are wrangling data")
+    #update_ipo_list(2019, 6, 7)
     main()
-
-#update_ipo_list()
